@@ -328,7 +328,40 @@
     </script>
 	<script src="./jszip.min.js"></script>
    <script src="./jquery-3.6.0.min.js"></script>
-  
+  <script>
+async function callServerCore(inputPayload) {
+  try {
+    // call server-side core logic
+    const url = '/api/coreLogic?file=custom_sp_convert.js'; // file param optional if server doesn't need it
+    const resp = await fetch(url, {
+      method: 'POST', // use POST if you need to send data; change server to accept POST body
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: inputPayload }) // change as needed
+    });
+
+    if (!resp.ok) {
+      const txt = await resp.text();
+      console.error('Server error', resp.status, txt);
+      return null;
+    }
+    const json = await resp.json();
+    return json; // expected structured result
+  } catch (err) {
+    console.error('Fetch failed', err);
+    return null;
+  }
+}
+
+// Example usage: call on page load or on user action
+document.addEventListener('DOMContentLoaded', async () => {
+  const result = await callServerCore('hello sample');
+  if (result) {
+    // update UI using result fields
+    document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+  }
+});
+</script>
+
 </body>
 
 </html>
